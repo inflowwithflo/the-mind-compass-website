@@ -1,0 +1,6 @@
+# Netlify-Konfiguration The Mind Compass
+# Statische Site liegt in site/, serverseitige Funktionen in netlify/functions/.
+
+[build]
+  publish = "site"
+  functions = "netlify/functions"

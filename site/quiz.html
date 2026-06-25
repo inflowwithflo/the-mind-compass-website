@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wie sehr rennt Dein Kopf wirklich? | The Mind Compass</title>
+  <meta name="description" content="10 Fragen, 2 Minuten: Finde heraus, wie sehr Dein Kopf wirklich rennt, und welcher nächste Schritt zu Dir passt.">
+
+  <!-- Fonts lokal gehostet (DSGVO): @font-face in css/style.css -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="vendor/intl-tel-input/css/intlTelInput.min.css">
+
+  <style>
+    /* ===== Quiz (nur diese Seite) ===== */
+    .quiz-wrap{background:var(--sand);min-height:60vh;padding:clamp(18px,4vh,40px) 0 clamp(50px,8vh,90px);}
+    /* Ablenkungsfreies Layout: schlanker Kopf, dezente Rechtszeile, voller Footer erst im Ergebnis */
+    .quiz-header{display:flex;justify-content:center;align-items:center;padding:22px 20px 4px;}
+    .quiz-header .logo img{height:54px;width:auto;}
+    .quiz-legal{text-align:center;padding:2rem 20px 2.6rem;color:var(--stein);font-size:.85rem;line-height:1.7;}
+    .quiz-legal a{color:var(--stein);text-decoration:none;}
+    .quiz-legal a:hover{color:var(--terra);}
+    .quiz-legal__links span{margin:0 .5rem;color:rgba(138,127,119,.55);}
+    .quiz-legal__copy{margin:.7rem 0 0;}
+    .quiz-legal__credit{margin:.15rem 0 0;font-size:.8rem;}
+    /* „Zur Startseite" nur auf der Intro-Seite zeigen, nicht während Fragen/Ergebnis */
+    .quiz-legal__home{display:inline-block;margin-bottom:1.1rem;color:var(--stein);text-decoration:none;}
+    .quiz-legal__home:hover{color:var(--terra);}
+    body.quiz-started .quiz-legal__home{display:none;}
+    .footer{display:none;} /* voller Footer auf der Quiz-Seite bewusst aus, auch im Ergebnis */
+    /* intl-tel-input an das Feld-Styling angleichen */
+    .iti{width:100%;}
+    .iti__country-list{font-family:inherit;font-size:.95rem;}
+    .quiz{--quiz-pad:clamp(22px,4vw,40px);max-width:680px;margin:0 auto;padding:var(--quiz-pad);background:var(--sand-light);border:1px solid rgba(184,153,104,.4);border-radius:20px;box-shadow:0 18px 50px rgba(51,45,42,.10);}
+    .quiz__progress{height:6px;border-radius:99px;background:rgba(138,127,119,.22);overflow:hidden;margin-bottom:clamp(1.4rem,3vw,2rem);}
+    .quiz__progress-fill{display:block;height:100%;width:0;background:var(--terra);border-radius:99px;transition:width .35s ease;}
+    .quiz__step{display:none;animation:quizIn .35s ease both;}
+    .quiz__step.is-active{display:block;}
+    @keyframes quizIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+
+    .quiz__qnum{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--terra);margin:0 0 .7rem;font-weight:500;}
+    .quiz__question{font-family:'Fraunces',Georgia,serif;font-weight:500;font-size:clamp(1.4rem,3.2vw,1.95rem);line-height:1.25;color:var(--espresso);margin:0 0 clamp(1.3rem,3vw,1.9rem);}
+    .quiz__options{display:flex;flex-direction:column;gap:12px;}
+    .quiz__option{text-align:left;font:inherit;color:var(--espresso);background:#fff;border:1px solid rgba(184,153,104,.5);border-radius:14px;padding:1rem 1.1rem;cursor:pointer;line-height:1.5;transition:border-color .2s ease,background .2s ease,transform .2s ease,box-shadow .2s ease;}
+    .quiz__option:hover{border-color:var(--terra);transform:translateY(-1px);box-shadow:0 8px 20px rgba(201,140,124,.18);}
+    .quiz__option:focus-visible{outline:2px solid var(--terra);outline-offset:2px;}
+    .quiz__option.is-selected{border-color:var(--terra);background:var(--terra);color:var(--terra-ink);}
+    .quiz__back{margin-top:1.6rem;background:transparent;border:1px solid var(--stein);color:var(--stein);font:inherit;cursor:pointer;padding:.5rem 1.1rem;border-radius:99px;transition:border-color .2s ease,color .2s ease;}
+    .quiz__back:hover{border-color:var(--espresso);color:var(--espresso);}
+    .quiz__back[hidden]{display:none;}
+
+    .quiz__intro-eyebrow{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--terra);font-weight:500;margin:0 0 .7rem;}
+    .quiz__intro-title{font-family:'Fraunces',Georgia,serif;font-weight:500;font-size:clamp(1.7rem,4vw,2.4rem);line-height:1.18;color:var(--espresso);margin:0 0 1rem;}
+    .quiz__intro p{color:var(--espresso-soft);margin:0 0 1.6rem;line-height:1.7;}
+
+    .quiz__lead-title{font-family:'Fraunces',Georgia,serif;font-weight:500;font-size:clamp(1.5rem,3.4vw,2.1rem);line-height:1.2;color:var(--espresso);margin:0 0 .6rem;}
+    .quiz__lead-sub{color:var(--espresso-soft);margin:0 0 1.6rem;line-height:1.7;}
+    .quiz__field{display:block;margin:0 0 1rem;}
+    .quiz__field span{display:block;font-size:.92rem;color:var(--espresso);margin:0 0 .35rem;}
+    .quiz__field input[type=text],.quiz__field input[type=email],.quiz__field input[type=tel]{width:100%;font:inherit;color:var(--espresso);background:#fff;border:1px solid rgba(184,153,104,.5);border-radius:12px;padding:.8rem .9rem;}
+    .quiz__field input:focus{outline:2px solid var(--terra);outline-offset:1px;border-color:var(--terra);}
+    .quiz__consent{display:flex;gap:.6rem;align-items:flex-start;font-size:.9rem;color:var(--espresso-soft);line-height:1.5;margin:.3rem 0 1.4rem;}
+    .quiz__consent input{margin-top:.2rem;flex:0 0 auto;width:18px;height:18px;accent-color:var(--terra);}
+    .quiz__consent a{color:var(--terra);text-decoration:underline;text-underline-offset:2px;}
+    .quiz__error{color:#9B3B2E;font-size:.9rem;margin:.2rem 0 1rem;min-height:1.2em;}
+    .quiz__hint{font-size:.82rem;color:var(--stein);margin:1rem 0 0;line-height:1.5;}
+    .quiz__form .btn{width:100%;}
+
+    .quiz__result{display:none;}
+    .quiz__result.is-active{display:block;}
+    .quiz__result .quiz__result-eyebrow{font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--stein);font-weight:500;margin:0 0 .35rem;}
+    .quiz__result .quiz__result-name{font-family:'Fraunces',Georgia,serif;font-weight:500;font-size:clamp(1.8rem,4.4vw,2.5rem);line-height:1.05;color:var(--terra);margin:0 0 .7rem;}
+    /* Banner-Bild oben in der Ergebniskarte, randlos, mit „Dein Typ" drauf */
+    .quiz__result-banner{position:relative;margin:calc(-1 * var(--quiz-pad)) calc(-1 * var(--quiz-pad)) 1.6rem;height:clamp(150px,27vw,210px);background-size:cover;background-position:center 38%;border-radius:20px 20px 0 0;overflow:hidden;display:flex;align-items:flex-end;}
+    .quiz__result-banner::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(28,22,18,0) 45%,rgba(28,22,18,.6) 100%);}
+    .quiz__result-banner .quiz__result-eyebrow{position:relative;z-index:1;margin:0;padding:0 0 1rem 1.3rem;color:var(--sand);text-shadow:0 1px 10px rgba(0,0,0,.55);}
+    .quiz__result-title{font-family:'Fraunces',Georgia,serif;font-weight:500;font-size:clamp(1.3rem,2.8vw,1.75rem);line-height:1.25;color:var(--espresso);margin:0 0 1.3rem;}
+    .quiz__result h4{font-size:.82rem;letter-spacing:.12em;text-transform:uppercase;color:var(--stein);margin:1.7rem 0 .5rem;}
+    .quiz__result p{color:var(--espresso-soft);line-height:1.7;margin:0 0 1rem;}
+    .quiz__result ol{color:var(--espresso-soft);line-height:1.7;padding-left:1.2rem;margin:0 0 1rem;}
+    .quiz__result ol li{margin:0 0 .6rem;}
+    .quiz__rec{background:#fff;border:1px solid rgba(184,153,104,.5);border-radius:14px;padding:clamp(1.1rem,2.6vw,1.5rem);margin:1.6rem 0 0;}
+    .quiz__rec .btn{margin-top:1rem;}
+    .quiz__more{display:inline-block;margin-top:.9rem;color:var(--stein);font-size:.95rem;border-bottom:1px solid rgba(138,127,119,.5);padding-bottom:1px;}
+    .quiz__more:hover{color:var(--terra);border-color:var(--terra);}
+  </style>
+</head>
+<body>
+
+  <header class="quiz-header">
+    <a class="logo" href="index.html"><img src="bilder/logo-quer.png" alt="The Mind Compass"></a>
+  </header>
+
+  <main class="quiz-wrap">
+    <div class="quiz">
+      <span class="quiz__progress" id="progress" hidden><span class="quiz__progress-fill" id="progressFill"></span></span>
+
+      <!-- Intro -->
+      <div class="quiz__step is-active" data-step="intro">
+        <p class="quiz__intro-eyebrow">2 Minuten für Dich</p>
+        <h1 class="quiz__intro-title">Wie sehr rennt Dein Kopf wirklich?</h1>
+        <p>Zehn Fragen, zwei Minuten, und Du siehst klarer, wo Du gerade stehst. Ehrlich, ohne Schönreden. Am Ende bekommst Du eine Einschätzung und einen konkreten nächsten Schritt.</p>
+        <button class="btn btn--primary" type="button" id="startBtn">Quiz starten</button>
+      </div>
+
+      <!-- Frage (wird wiederverwendet) -->
+      <div class="quiz__step" data-step="question">
+        <p class="quiz__qnum" id="qnum"></p>
+        <h2 class="quiz__question" id="qtext"></h2>
+        <div class="quiz__options" id="qoptions"></div>
+        <button class="quiz__back" type="button" id="backBtn">← Zurück</button>
+      </div>
+
+      <!-- Lead-Gate -->
+      <div class="quiz__step" data-step="lead">
+        <h2 class="quiz__lead-title">Dein Ergebnis ist fertig.</h2>
+        <p class="quiz__lead-sub">Trag Dich kurz ein, dann zeige ich Dir, was hinter Deinen Antworten steckt.</p>
+        <form class="quiz__form" id="leadForm" novalidate>
+          <label class="quiz__field">
+            <span>Vorname</span>
+            <input type="text" name="name" autocomplete="given-name" placeholder="Dein Vorname" required>
+          </label>
+          <label class="quiz__field">
+            <span>E-Mail</span>
+            <input type="email" name="email" autocomplete="email" placeholder="dein.name@email.de" required>
+          </label>
+          <label class="quiz__field">
+            <span>Telefon</span>
+            <input type="tel" name="phone" autocomplete="tel" placeholder="Deine Handynummer" required>
+          </label>
+          <label class="quiz__consent">
+            <input type="checkbox" name="consent" required>
+            <span>Ja, ich möchte mein Ergebnis sehen. Ich habe die <a href="datenschutz.html" target="_blank" rel="noopener">Datenschutzerklärung</a> gelesen und bin einverstanden.</span>
+          </label>
+          <p class="quiz__error" id="leadError" role="alert"></p>
+          <button class="btn btn--primary" type="submit" id="leadSubmit">Ergebnis anzeigen</button>
+        </form>
+      </div>
+
+      <!-- Ergebnis -->
+      <div class="quiz__step" data-step="result">
+
+        <div class="quiz__result" data-result="A">
+          <div class="quiz__result-banner" style="background-image:url('bilder/quiz-wachsame.webp')">
+            <p class="quiz__result-eyebrow">Dein Typ</p>
+          </div>
+          <p class="quiz__result-name">Die Wachsame</p>
+          <h2 class="quiz__result-title">Dein Kopf ist erstaunlich ruhig für Dein Tempo.</h2>
+          <h4>Dein Ergebnis</h4>
+          <p>Dein Kopf ist erstaunlich ruhig für jemanden mit Deinem Tempo. Du schaffst es, einen Tag wirklich abzuschließen, Stille auszuhalten und Dich selbst auch dann zu zeigen, wenn es Dir mal anders geht. Das ist eine echte Stärke, und es ist wichtig, dass Du das bei Dir selbst anerkennst.</p>
+          <h4>Was das über Dich verrät</h4>
+          <p>Du hast eine gute Basis. Dein System funktioniert gerade, weil Du bewusst oder unbewusst Dinge tust, die Dich im Gleichgewicht halten. Je mehr Verantwortung, Tempo und Erwartungen zunehmen, desto mehr Energie kostet es, diese Ruhe aufrechtzuerhalten. Genau jetzt ist der richtige Moment, diese Ruhe zu verstehen, zu vertiefen und abzusichern.</p>
+          <h4>Drei Dinge, die Du ab heute tun kannst</h4>
+          <ol>
+            <li><strong>Der Abend-Check (täglich, 5 Min):</strong> Stell Dir jeden Abend eine Frage: „Wann war heute der Moment, in dem mein Kopf am lautesten war?" Schreib ihn auf, nur einen Satz. Nach einer Woche siehst Du Deine Auslöser.</li>
+            <li><strong>Die bewusste Stille (3x/Woche, 10 Min):</strong> Hinsetzen, Handy weg, Musik aus, nichts tun. Beobachte, was passiert. Das zeigt Dir, wie stabil Deine Ruhe wirklich ist.</li>
+            <li><strong>Der Körper-Scan vor dem Einschlafen (täglich, 3 Min):</strong> Von den Füßen bis zum Kopf durchgehen. Wo ist Anspannung? Der Kopf lügt manchmal, der Körper nie.</li>
+          </ol>
+          <div class="quiz__rec">
+            <h4>Meine Empfehlung</h4>
+            <p>Die Compass Session als Checkup für Deinen inneren Zustand. 90 bis 120 Minuten, persönlich in Palma. Du investierst gerade in alles andere. Das hier ist die Investition in Dich selbst.</p>
+            <a class="btn btn--primary" href="https://cal.eu/themindcompass/compass-session" target="_blank" rel="noopener">Compass Session buchen — 147 €</a>
+            <br><a class="quiz__more" href="compass-session.html">Mehr zur Compass Session →</a>
+          </div>
+        </div>
+
+        <div class="quiz__result" data-result="B">
+          <div class="quiz__result-banner" style="background-image:url('bilder/quiz-traegerin.webp')">
+            <p class="quiz__result-eyebrow">Dein Typ</p>
+          </div>
+          <p class="quiz__result-name">Die Trägerin</p>
+          <h2 class="quiz__result-title">Du funktionierst. Und im Hintergrund läuft etwas mit.</h2>
+          <h4>Dein Ergebnis</h4>
+          <p>Du funktionierst. Und Du funktionierst gut. Nach außen läuft Dein Leben, Dein Business, Deine Beziehungen weitgehend rund. Aber im Hintergrund läuft etwas mit, das Du kaum noch bemerkst: das leise Weiterdenken, das kurze Wachliegen nachts, das Abwägen bei kleinen Entscheidungen. Du trägst das alles, Tag für Tag. Und nach außen sieht es niemand.</p>
+          <h4>Was das über Dich verrät</h4>
+          <p>Du hast bereits vieles ausprobiert und jedes Mal etwas über Dich gelernt. Meditation, Yoga, Bücher, all das war wichtig. Und doch bist Du wieder hier, weil das Grundrauschen geblieben ist. Alleine bleiben diese Methoden an der Oberfläche. Das Muster sitzt tiefer, dort wo Körper und Nervensystem es festhalten. Genau dort braucht es jemanden, der mit Dir hinschaut.</p>
+          <h4>Drei Dinge, die Du ab heute tun kannst</h4>
+          <ol>
+            <li><strong>Das Gedanken-Protokoll (7 Tage, abends, 5 Min):</strong> Die drei häufigsten Gedanken des Tages aufschreiben, nicht bewerten. Wiederholungen zeigen, wo Dein Kopf feststeckt.</li>
+            <li><strong>Die Entscheidungs-Übung:</strong> Die nächste kleine Entscheidung in 3 Sekunden treffen und dabei bleiben. Trainiert Dein Nervensystem, Entscheidungen wieder zu vertrauen.</li>
+            <li><strong>Der Körper spricht zuerst (täglich, 1 Min):</strong> Vor dem Handy morgens eine Hand auf Bauch, eine auf Brust. 60 Sekunden nur spüren.</li>
+          </ol>
+          <div class="quiz__rec">
+            <h4>Meine Empfehlung</h4>
+            <p>Der Foundation Reset gibt Dir in 30 Tagen den Zugang dorthin, wo Du alleine bisher nicht hingekommen bist. 2 Compass Sessions, 2 Intensivgespräche, WhatsApp-Begleitung. Alles neben Deinem Alltag, in Deinem Tempo, auf Mallorca.</p>
+            <a class="btn btn--primary" href="https://cal.eu/themindcompass/orientierungsgesprach" target="_blank" rel="noopener">Orientierungsgespräch anfragen</a>
+            <br><a class="quiz__more" href="foundation-reset.html">Mehr zum Foundation Reset →</a>
+          </div>
+        </div>
+
+        <div class="quiz__result" data-result="C">
+          <div class="quiz__result-banner" style="background-image:url('bilder/quiz-stille-kaempferin.webp')">
+            <p class="quiz__result-eyebrow">Dein Typ</p>
+          </div>
+          <p class="quiz__result-name">Die Stille Kämpferin</p>
+          <h2 class="quiz__result-title">Nach außen perfekt. Innerlich rennt Dein Kopf seit Monaten.</h2>
+          <h4>Dein Ergebnis</h4>
+          <p>Nach außen sieht bei Dir alles nach einem Leben aus, das andere sich wünschen. Und innerlich rennt Dein Kopf seit Monaten, vielleicht länger. Irgendwann hast Du gelernt, das für Dich zu behalten. Du funktionierst perfekt, gerade dann, wenn es innerlich am schwersten ist. Stille ist Dir unangenehm geworden, und selbst kleine Entscheidungen fühlen sich groß an.</p>
+          <h4>Was das über Dich verrät</h4>
+          <p>Du bist stärker, als Du Dir gerade selbst zugestehst. Dass Du dieses Quiz gemacht hast, zeigt das. Was Du bisher versucht hast, hat Dir bewiesen, dass Du bereit bist. Was fehlt, ist jemand, der mit Dir über Körper und Nervensystem dorthin geht, wo der Kopf den Zugang versperrt. An die Wurzel.</p>
+          <h4>Drei Dinge, die Du ab heute tun kannst</h4>
+          <ol>
+            <li><strong>Sag es laut (heute):</strong> Sag einem Menschen: „Mir geht es innerlich anders, als es von außen aussieht." Das bricht das Muster des Alleine-Tragens.</li>
+            <li><strong>Die Stopp-Übung:</strong> Wenn der Kopf losrennt, beide Hände flach auf eine Oberfläche, leicht dagegen drücken, dreimal ausatmen. Holt Dein Nervensystem aus dem Kopf zurück in den Körper.</li>
+            <li><strong>Schreib Deinen inneren Satz auf (einmalig, 5 Min):</strong> Der Satz, den Du Dir am häufigsten sagst. Ihn zu kennen, ist der erste Schritt, ihn zu verändern.</li>
+          </ol>
+          <div class="quiz__rec">
+            <h4>Meine Empfehlung</h4>
+            <p>Der Empire Reset, das Intensivste, was ich anbiete. 14 Tage, nur Du und ich, auf Mallorca, weg von Deinen Routinen. 4 Tage pro Woche gemeinsam, 3 Tage für Dich. Ich begleite in der Zeit ausschließlich Dich.</p>
+            <a class="btn btn--primary" href="https://cal.eu/themindcompass/orientierungsgesprach" target="_blank" rel="noopener">Orientierungsgespräch anfragen</a>
+            <br><a class="quiz__more" href="empire-reset.html">Mehr zum Empire Reset →</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer__top">
+      <div class="footer__brand">
+        <a class="footer__logo" href="index.html"><img src="bilder/logo-quer.png" alt="The Mind Compass"></a>
+        <p class="footer__tagline">Mental Mentoring für Frauen, die nach außen funktionieren und innerlich endlich zur Ruhe kommen wollen. Persönlich, 1:1, auf Mallorca.</p>
+      </div>
+      <nav class="footer__col" aria-label="Programme">
+        <h4>Programme</h4>
+        <a href="empire-reset.html">Empire Reset</a>
+        <a href="foundation-reset.html">Foundation Reset</a>
+        <a href="compass-session.html">Compass Session</a>
+        <a href="quiz.html">Quiz</a>
+      </nav>
+      <nav class="footer__col" aria-label="Entdecken">
+        <h4>Entdecken</h4>
+        <a href="ueber-florian.html">Über Florian</a>
+        <a href="community.html">Community</a>
+        <a href="index.html#stimmen">Stimmen</a>
+        <a href="index.html#kontakt">Kontakt</a>
+      </nav>
+      <div class="footer__col">
+        <h4>Kontakt</h4>
+        <div class="footer__socials">
+          <a href="mailto:inflow.withflo@gmail.com" aria-label="E-Mail">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+          </a>
+          <a href="https://www.instagram.com/inflow_withflo" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.4" cy="6.6" r="1" fill="currentColor" stroke="none"/></svg>
+          </a>
+          <a href="https://www.tiktok.com/@inflow_withflo" target="_blank" rel="noopener" aria-label="TikTok">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 3c.3 2.1 1.5 3.6 3.5 3.9v2.4c-1.3.1-2.5-.3-3.5-1v5.9c0 3.4-2.7 5.8-5.8 5.4-2.6-.3-4.5-2.5-4.4-5.1.1-2.8 2.6-4.9 5.4-4.6v2.5c-.4-.1-.9-.1-1.3 0-1.1.3-1.8 1.3-1.6 2.4.2 1 1.1 1.7 2.1 1.6 1.1-.1 1.9-1 1.9-2.1V3h3.2z"/></svg>
+          </a>
+          <a href="https://www.facebook.com/share/18mS2NH9gj/" target="_blank" rel="noopener" aria-label="Facebook">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.89h-2.34v6.99A10 10 0 0 0 22 12z"/></svg>
+          </a>
+          <a href="https://www.linkedin.com/in/florian-faller-a89976255/" target="_blank" rel="noopener" aria-label="LinkedIn">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2 2 0 1 1 0 4 2 2 0 0 1 0-4zM3 9h4v12H3zM10 9h3.8v1.7h.1c.5-.9 1.8-1.9 3.6-1.9 3.9 0 4.6 2.5 4.6 5.8V21h-4v-5.2c0-1.2 0-2.8-1.7-2.8s-2 1.4-2 2.7V21h-4z"/></svg>
+          </a>
+        </div>
+        <a href="impressum.html">Impressum</a>
+        <a href="datenschutz.html">Datenschutz</a>
+        <a href="agb.html">AGB</a>
+      </div>
+    </div>
+    <div class="container footer__bottom">
+      <p class="footer__copy">© 2026 The Mind Compass · Florian Faller</p>
+      <p class="footer__credit">Mit Herz gestaltet von <a href="https://innerspark-design.netlify.app/" target="_blank" rel="noopener">Inner.Spark</a></p>
+    </div>
+  </footer>
+
+  <footer class="quiz-legal" id="quizLegal">
+    <a class="quiz-legal__home" href="index.html">← Zur Startseite</a>
+    <div class="quiz-legal__links">
+      <a href="impressum.html">Impressum</a>
+      <span aria-hidden="true">·</span>
+      <a href="datenschutz.html">Datenschutz</a>
+    </div>
+    <p class="quiz-legal__copy">© 2026 The Mind Compass · Florian Faller</p>
+    <p class="quiz-legal__credit">Mit Herz gestaltet von <a href="https://innerspark-design.netlify.app/" target="_blank" rel="noopener">Inner.Spark</a></p>
+  </footer>
+
+  <script src="vendor/intl-tel-input/js/intlTelInput.min.js"></script>
+  <script>
+    // ===== Quiz-Logik =====
+    (function () {
+      // Fragen: Reihenfolge der Antworten wie angezeigt (A/B/C), 'type' = gewerteter Typ.
+      // Typ A = Die Wachsame (Compass), B = Die Trägerin (Foundation), C = Die Stille Kämpferin (Empire).
+      var QUESTIONS = [
+        { q: "Wie sieht ein typischer Abend bei Dir aus, wenn der Tag vorbei ist?", o: [
+          { t: "Mein Kopf macht da weiter, wo der Tag aufgehört hat. Er hört einfach nicht auf.", type: "C" },
+          { t: "Ich kann den Tag abschließen und wirklich runterkommen.", type: "A" },
+          { t: "Ich funktioniere noch eine Weile weiter im Kopf, auch wenn äußerlich Ruhe ist.", type: "B" } ] },
+        { q: "Du liegst nachts wach. Was passiert?", o: [
+          { t: "Ich liege eine Weile wach und denke nach, komme dann aber wieder zur Ruhe.", type: "B" },
+          { t: "Ich schlafe meist schnell wieder ein.", type: "A" },
+          { t: "Mein Kopf fängt an zu analysieren, zu planen, zu zweifeln. Und das kann dauern.", type: "C" } ] },
+        { q: "Wie geht es Dir mit kleinen Entscheidungen im Alltag?", o: [
+          { t: "Ich entscheide und gehe weiter.", type: "A" },
+          { t: "Selbst kleine Dinge fühlen sich plötzlich überladen an. Ich prüfe, kontrolliere, hinterfrage alles.", type: "C" },
+          { t: "Ich wäge ab, manchmal länger als nötig, entscheide aber am Ende klar.", type: "B" } ] },
+        { q: "Du hast endlich einen freien Tag. Was passiert in Dir?", o: [
+          { t: "Ich merke, dass ich gar nicht mehr richtig weiß, wie sich Abschalten anfühlt.", type: "C" },
+          { t: "Ich genieße echte Pause, ohne schlechtes Gewissen.", type: "A" },
+          { t: "Ich plane die Pause durch, damit sie sich „verdient“ anfühlt.", type: "B" } ] },
+        { q: "Wie reagiert Dein Umfeld auf Dich, wenn es Dir innerlich nicht gut geht?", o: [
+          { t: "Niemand würde es ahnen. Ich funktioniere nach außen einwandfrei, komme was wolle.", type: "C" },
+          { t: "Sie merken selten etwas. Ich halte die Fassade ziemlich gut.", type: "B" },
+          { t: "Sie merken es. Ich zeige es auch.", type: "A" } ] },
+        { q: "Was tust Du, wenn der innere Druck zu groß wird?", o: [
+          { t: "Ich nehme mir bewusst Raum und Zeit für mich.", type: "A" },
+          { t: "Ich lenke mich ab. Mehr Arbeit, mehr Scrollen, mehr Aktivität, alles außer Stillstand.", type: "C" },
+          { t: "Ich arbeite weiter und kümmere mich später darum.", type: "B" } ] },
+        { q: "Wie fühlt sich für Dich echte Stille an? Ganz ohne Ablenkung, ganz allein mit Dir?", o: [
+          { t: "Aushaltbar für kurze Zeit, dann brauche ich wieder etwas zu tun.", type: "B" },
+          { t: "Unangenehm. Ich vermeide sie, ohne mir das groß einzugestehen.", type: "C" },
+          { t: "Angenehm, fast erholsam.", type: "A" } ] },
+        { q: "Du hast schon einiges ausprobiert: Meditation, Yoga, Atemübungen, vielleicht Achtsamkeits-Apps. Wie war das Ergebnis?", o: [
+          { t: "Kurzfristig spürbare Erleichterung, aber nach einiger Zeit war ich wieder im alten Muster.", type: "B" },
+          { t: "Hat mir wirklich geholfen, mein Zustand hat sich nachhaltig verändert.", type: "A" },
+          { t: "Ich hab vieles probiert, aber im Kern hat sich an dem Grundrauschen in meinem Kopf wenig verändert.", type: "C" } ] },
+        { q: "Wie oft denkst Du „Eigentlich müsste es mir doch gut gehen, ich hab doch alles erreicht\"?", o: [
+          { t: "Öfter, als ich zugeben würde. Und genau das macht es noch schwerer.", type: "C" },
+          { t: "Selten. Mein Innenleben passt zu meinem Außenleben.", type: "A" },
+          { t: "Hin und wieder. Dieser Gedanke kommt schon mal hoch.", type: "B" } ] },
+        { q: "Wenn Dir jemand sagen würde, dass es einen Weg gibt, diesen Lärm im Kopf wirklich leiser zu machen, was wäre Deine erste Reaktion?", o: [
+          { t: "Erleichterung. Endlich jemand, der versteht, was bei mir los ist.", type: "B" },
+          { t: "Sofort. Ich bin bereit, alles dafür zu tun, damit das aufhört.", type: "C" },
+          { t: "Interesse. Ich würde mir das erst mal anschauen, bevor ich mich entscheide.", type: "A" } ] }
+      ];
+
+      var answers = [];          // gewählter Typ pro Frage
+      var current = 0;           // aktueller Frageindex
+      var steps = {};
+      document.querySelectorAll('.quiz__step').forEach(function (el) { steps[el.getAttribute('data-step')] = el; });
+      var progress = document.getElementById('progress');
+      var progressFill = document.getElementById('progressFill');
+      var qnum = document.getElementById('qnum');
+      var qtext = document.getElementById('qtext');
+      var qoptions = document.getElementById('qoptions');
+      var backBtn = document.getElementById('backBtn');
+
+      function show(step) {
+        Object.keys(steps).forEach(function (k) { steps[k].classList.toggle('is-active', k === step); });
+        progress.style.display = (step === 'question') ? 'block' : 'none';
+        document.body.classList.toggle('quiz-started', step !== 'intro'); // „Zur Startseite" nur im Intro
+      }
+
+      function renderQuestion() {
+        var item = QUESTIONS[current];
+        qnum.textContent = 'Frage ' + (current + 1) + ' von ' + QUESTIONS.length;
+        qtext.textContent = item.q;
+        progressFill.style.width = ((current) / QUESTIONS.length * 100) + '%';
+        qoptions.innerHTML = '';
+        item.o.forEach(function (opt) {
+          var b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'quiz__option' + (answers[current] === opt.type && answers[current] !== undefined ? '' : '');
+          b.textContent = opt.t;
+          if (answers[current] === opt.type) b.classList.add('is-selected');
+          b.addEventListener('click', function () { choose(opt.type, b); });
+          qoptions.appendChild(b);
+        });
+        backBtn.hidden = (current === 0);
+        show('question');
+      }
+
+      function choose(type, btn) {
+        answers[current] = type;
+        qoptions.querySelectorAll('.quiz__option').forEach(function (o) { o.classList.remove('is-selected'); });
+        btn.classList.add('is-selected');
+        progressFill.style.width = ((current + 1) / QUESTIONS.length * 100) + '%';
+        setTimeout(function () {
+          if (current < QUESTIONS.length - 1) { current++; renderQuestion(); }
+          else { show('lead'); }
+        }, 260);
+      }
+
+      function computeResult() {
+        var c = { A: 0, B: 0, C: 0 };
+        answers.forEach(function (t) { if (c[t] !== undefined) c[t]++; });
+        // Mehrheit gewinnt; bei Gleichstand der intensivere Typ (C vor B vor A).
+        var order = ['C', 'B', 'A'];
+        var best = 'A', bestN = -1;
+        order.forEach(function (t) { if (c[t] > bestN) { bestN = c[t]; best = t; } });
+        return best;
+      }
+
+      function showResult() {
+        var type = computeResult();
+        document.querySelectorAll('.quiz__result').forEach(function (r) {
+          r.classList.toggle('is-active', r.getAttribute('data-result') === type);
+        });
+        show('result');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      // Start
+      document.getElementById('startBtn').addEventListener('click', function () { current = 0; renderQuestion(); });
+      backBtn.addEventListener('click', function () { if (current > 0) { current--; renderQuestion(); } });
+
+      // Lead-Formular
+      var form = document.getElementById('leadForm');
+      var errEl = document.getElementById('leadError');
+      var submitBtn = document.getElementById('leadSubmit');
+
+      // Telefon-Feld mit Länder-Flagge + Vorwahl (intl-tel-input, selbst gehostet)
+      var iti = null;
+      if (window.intlTelInput) {
+        iti = window.intlTelInput(form.phone, {
+          initialCountry: 'de',
+          countryOrder: ['de', 'at', 'ch', 'es'],
+          separateDialCode: true
+        });
+      }
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        errEl.textContent = '';
+        var name = form.name.value.trim();
+        var email = form.email.value.trim();
+        var phoneLocal = form.phone.value.trim();
+        var consent = form.consent.checked;
+        if (name.length < 2) { errEl.textContent = 'Bitte gib Deinen Vornamen ein.'; return; }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { errEl.textContent = 'Bitte gib eine gültige E-Mail-Adresse ein.'; return; }
+        if (phoneLocal.replace(/\D/g, '').length < 5) { errEl.textContent = 'Bitte gib eine gültige Telefonnummer ein.'; return; }
+        if (!consent) { errEl.textContent = 'Bitte bestätige die Datenschutzerklärung.'; return; }
+
+        var dial = (iti && iti.getSelectedCountryData) ? iti.getSelectedCountryData().dialCode : '';
+        var phoneFull = (dial ? '+' + dial + ' ' : '') + phoneLocal;
+
+        var type = computeResult();
+        var typeName = { A: 'Die Wachsame', B: 'Die Trägerin', C: 'Die Stille Kämpferin' }[type];
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Einen Moment …';
+
+        // An die Netlify-Funktion übergeben (Best-Effort). Ergebnis wird so oder so gezeigt.
+        fetch('/.netlify/functions/quiz-lead', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: name, email: email, phone: phoneFull, resultType: type, resultName: typeName })
+        }).catch(function () { /* offline/lokal: ignorieren, Ergebnis trotzdem zeigen */ })
+          .finally(function () { showResult(); });
+      });
+    })();
+  </script>
+
+</body>
+</html>
