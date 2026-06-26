@@ -1,0 +1,35 @@
+# robots.txt — The Mind Compass
+# Suchmaschinen und KI-/Answer-Engines dürfen die ganze Seite lesen.
+
+User-agent: *
+Allow: /
+
+# KI-/Generative-Engine-Crawler ausdrücklich erlauben (GEO)
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+Sitemap: https://the-mind-compass.com/sitemap.xml
