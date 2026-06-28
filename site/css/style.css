@@ -407,7 +407,7 @@ p.muted-link{margin-top:1.1rem;font-size:.95rem;}
 
 /* Community-Hero: warme, einladende Terrasse am Meer (Morgenstimmung). */
 .hero--community{height:80vh;min-height:580px;max-height:840px;background-image:url('../bilder/community-hero.webp');}
-.hero__meta{margin:1rem 0 0;font-size:.82rem;letter-spacing:.14em;text-transform:uppercase;color:var(--stein);text-shadow:0 1px 12px rgba(248,243,237,.7);}
+.hero__meta{margin:1rem 0 0;font-size:.84rem;letter-spacing:.14em;text-transform:uppercase;color:var(--espresso);font-weight:500;text-shadow:0 1px 10px rgba(248,243,237,.9);}
 
 /* WhatsApp-Button mit Icon */
 .btn--whatsapp{display:inline-flex;align-items:center;justify-content:center;gap:.55rem;}
