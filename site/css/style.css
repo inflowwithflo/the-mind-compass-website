@@ -454,6 +454,8 @@ p.muted-link{margin-top:1.1rem;font-size:.95rem;}
 .fact__icon{width:30px;height:30px;color:var(--gold);margin-bottom:1rem;}
 .fact__label{display:block;font-family:'Fraunces',Georgia,serif;font-weight:500;color:var(--espresso);font-size:1.12rem;margin-bottom:.4rem;}
 .fact__value{margin:0;line-height:1.65;color:var(--espresso-soft);font-size:.98rem;}
+.fact__value a{color:var(--terra);text-decoration:underline;text-underline-offset:2px;}
+.facts--duo .fact__value a{color:var(--terra-ink);}
 
 /* Sekunden-Counter (vor CTA) */
 .counter{text-align:center;}
